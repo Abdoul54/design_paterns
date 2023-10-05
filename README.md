@@ -1,10 +1,12 @@
 # Design Patterns
 
-## Creational Patterns:
+## **Creational Patterns:**
 
 ### 1. **Singleton Pattern**:
-   - **Real-world analogy**: The president's office, where there can only be one president at a time.
-   - **Code Example** (Python):
+   - **Definition**: Ensures that a class has only one instance and provides a global point of access to that instance.
+   - **Real-World Analogy**: A president's office with a single president who manages the country.
+   - **When to Use**: Use it when you want to ensure that there's only one instance of a class in your application.
+   - **Code Example**:
      ```python
      class President:
          _instance = None
@@ -17,202 +19,137 @@
      president1 = President()
      president2 = President()
 
-     print(president1 is president2)  # Output: True (they are the same instance)
+     print(president1 is president2)  # True, they are the same instance
      ```
 
 ### 2. **Factory Method Pattern**:
-   - **Real-world analogy**: A car factory that produces cars of different models.
-   - **Code Example** (Python):
+   - **Definition**: Defines an interface for creating an object but allows subclasses to alter the type of objects that will be created.
+   - **Real-World Analogy**: A car factory that produces cars of different models based on customer demand.
+   - **When to Use**: Use it when you want to delegate the responsibility of object creation to subclasses.
+   - **Code Example**:
      ```python
-     from abc import ABC, abstractmethod
+     class Car:
+         def __init__(self, model):
+             self.model = model
 
-     class Car(ABC):
-         @abstractmethod
-         def drive(self):
-             pass
+     class CarFactory:
+         @staticmethod
+         def create_car(model):
+             return Car(model)
 
-     class Sedan(Car):
-         def drive(self):
-             return "Driving a sedan"
-
-     class SUV(Car):
-         def drive(self):
-             return "Driving an SUV"
-
-     def create_car(car_type):
-         if car_type == "sedan":
-             return Sedan()
-         elif car_type == "suv":
-             return SUV()
-
-     car = create_car("suv")
-     print(car.drive())  # Output: Driving an SUV
+     car1 = CarFactory.create_car("SUV")
+     car2 = CarFactory.create_car("Sedan")
      ```
 
 ### 3. **Abstract Factory Pattern**:
-   - **Real-world analogy**: A car manufacturer that produces both cars and their corresponding parts (e.g., engines, tires).
-   - **Code Example** (Python):
+   - **Definition**: Provides an interface for creating families of related or dependent objects without specifying their concrete classes.
+   - **Real-World Analogy**: A furniture factory that produces sets of matching furniture (e.g., table, chairs, and cabinet).
+   - **When to Use**: Use it when you need to create families of related objects.
+   - **Code Example**:
      ```python
-     from abc import ABC, abstractmethod
+     class Chair:
+         pass
 
-     class Car(ABC):
-         @abstractmethod
-         def drive(self):
+     class Table:
+         pass
+
+     class FurnitureFactory:
+         def create_chair(self):
              pass
 
-     class Engine(ABC):
-         @abstractmethod
-         def start(self):
+         def create_table(self):
              pass
 
-     class Sedan(Car):
-         def drive(self):
-             return "Driving a sedan"
+     class ModernFurnitureFactory(FurnitureFactory):
+         def create_chair(self):
+             return Chair()
 
-     class SUV(Car):
-         def drive(self):
-             return "Driving an SUV"
+         def create_table(self):
+             return Table()
 
-     class ElectricEngine(Engine):
-         def start(self):
-             return "Starting an electric engine"
-
-     class GasolineEngine(Engine):
-         def start(self):
-             return "Starting a gasoline engine"
-
-     class CarFactory(ABC):
-         @abstractmethod
-         def create_car(self):
-             pass
-
-         @abstractmethod
-         def create_engine(self):
-             pass
-
-     class SedanFactory(CarFactory):
-         def create_car(self):
-             return Sedan()
-
-         def create_engine(self):
-             return GasolineEngine()
-
-     class SUVFactory(CarFactory):
-         def create_car(self):
-             return SUV()
-
-         def create_engine(self):
-             return ElectricEngine()
-
-     factory = SedanFactory()
-     car = factory.create_car()
-     engine = factory.create_engine()
-     print(car.drive())     # Output: Driving a sedan
-     print(engine.start())  # Output: Starting a gasoline engine
+     factory = ModernFurnitureFactory()
+     chair = factory.create_chair()
+     table = factory.create_table()
      ```
 
 ### 4. **Builder Pattern**:
-   - **Real-world analogy**: Building a custom meal at a restaurant by selecting various components (e.g., burger, fries, drink).
-   - **Code Example** (Python):
+   - **Definition**: Separates the construction of a complex object from its representation, allowing the same construction process to create different representations.
+   - **Real-World Analogy**: A chef building a custom sandwich based on the customer's choice of bread, filling, and toppings.
+   - **When to Use**: Use it when you need to create complex objects with many optional components.
+   - **Code Example**:
      ```python
-     class MealBuilder:
-         def prepare_burger(self):
-             pass
+     class Sandwich:
+         def __init__(self):
+             self.bread = None
+             self.fillings = []
+             self.toppings = []
 
-         def prepare_fries(self):
-             pass
+     class SandwichBuilder:
+         def __init__(self):
+             self.sandwich = Sandwich()
 
-         def prepare_drink(self):
-             pass
+         def add_bread(self, bread):
+             self.sandwich.bread = bread
 
-     class VegMealBuilder(MealBuilder):
-         def prepare_burger(self):
-             return "Veggie Burger"
+         def add_filling(self, filling):
+             self.sandwich.fillings.append(filling)
 
-         def prepare_fries(self):
-             return "French Fries"
+         def add_topping(self, topping):
+             self.sandwich.toppings.append(topping)
 
-         def prepare_drink(self):
-             return "Coke"
+         def build(self):
+             return self.sandwich
 
-     class NonVegMealBuilder(MealBuilder):
-         def prepare_burger(self):
-             return "Chicken Burger"
-
-         def prepare_fries(self):
-             return "Chicken Fries"
-
-         def prepare_drink(self):
-             return "Pepsi"
-
-     class MealDirector:
-         def create_meal(self, builder):
-             meal = {}
-             meal["Burger"] = builder.prepare_burger()
-             meal["Fries"] = builder.prepare_fries()
-             meal["Drink"] = builder.prepare_drink()
-             return meal
-
-     veg_builder = VegMealBuilder()
-     non_veg_builder = NonVegMealBuilder()
-     director = MealDirector()
-
-     veg_meal = director.create_meal(veg_builder)
-     non_veg_meal = director.create_meal(non_veg_builder)
-
-     print(veg_meal)
-     print(non_veg_meal)
+     builder = SandwichBuilder()
+     builder.add_bread("Wheat")
+     builder.add_filling("Turkey")
+     builder.add_topping("Lettuce")
+     sandwich = builder.build()
      ```
 
 ### 5. **Prototype Pattern**:
-   - **Real-world analogy**: Making photocopies of a master document.
-   - **Code Example** (Python):
+   - **Definition**: Creates new objects by copying an existing object, known as the prototype.
+   - **Real-World Analogy**: A photocopier that duplicates documents based on an original.
+   - **When to Use**: Use it when you want to create new objects by copying an existing one, especially when the cost of creating an object is expensive.
+   - **Code Example**:
      ```python
      import copy
 
      class Prototype:
          def clone(self):
-             pass
-
-     class ConcretePrototype(Prototype):
-         def __init__(self, value):
-             self._value = value
-
-         def clone(self):
              return copy.deepcopy(self)
 
-     prototype = ConcretePrototype("Initial Value")
-     copy1 = prototype.clone()
-     copy2 = prototype.clone()
+     class ConcretePrototype(Prototype):
+         def __init__(self, data):
+             self.data = data
 
-     print(copy1._value)  # Output: Initial Value
-     print(copy2._value)  # Output: Initial Value
-
-     copy1._value = "Modified Value"
-     print(prototype._value)  # Output: Initial Value
-     print(copy1._value)     # Output: Modified Value
+     original = ConcretePrototype("Original Data")
+     clone1 = original.clone()
+     clone2 = original.clone()
      ```
 
-## Structural Patterns:
+## **Structural Patterns:**
 
 ### 1. **Adapter Pattern**:
-   - **Real-world analogy**: Using an adapter to connect a European plug to a US socket.
-   - **Code Example** (Python):
+   - **Definition**: Allows the interface of an existing class to be used as another interface.
+   - **Real-World Analogy**: Using an adapter to plug a European device into a US power socket.
+   - **When to Use**: Use it when you need to make two incompatible interfaces work together.
+   - **Code Example**:
      ```python
-     class EuropeanPlug:
+     class EuropeanDevice:
          def plug_in_european_socket(self):
              print("Plugged into European socket")
 
      class USAdapter:
-         def __init__(self, european_plug):
-             self._european_plug = european_plug
+         def __init__(self, european_device):
+             self.european_device = european_device
 
          def plug_in_us_socket(self):
              print("Plugged into US socket")
-             self._european_plug.plug_in_european_socket()
+             self.european_device.plug_in_european_socket()
 
-     european_plug = EuropeanPlug()
-     adapter = USAdapter(european_plug)
+     european_device = EuropeanDevice()
+     adapter = USAdapter(european_device)
      adapter.plug_in_us_socket()
 
      # Output:
@@ -221,281 +158,300 @@
      ```
 
 ### 2. **Bridge Pattern**:
-   - **Real-world analogy**: Building a TV remote control that can work with different TV models.
-   - **Code Example** (Python):
+   - **Definition**: Separates an object's abstraction from its implementation, allowing them to vary independently.
+   - **Real-World Analogy**: A remote control that operates various devices like TVs and DVD players.
+   - **When to Use**: Use it when you want to avoid a permanent binding between an abstraction and its implementation.
+   - **Code Example**:
      ```python
-     from abc import ABC, abstractmethod
-
-     class Device(ABC):
-         @abstractmethod
+     class Device:
          def turn_on(self):
              pass
 
-         @abstractmethod
          def turn_off(self):
              pass
-
-     class TV(Device):
-         def turn_on(self):
-             print("TV is ON")
-
-         def turn_off(self):
-             print("TV is OFF")
 
      class RemoteControl:
          def __init__(self, device):
-             self._device = device
+             self.device = device
 
+         def power_on(self):
+             self.device.turn_on()
+
+         def power_off(self):
+             self.device.turn_off()
+
+     class TV(Device):
          def turn_on(self):
-             self._device.turn_on()
+             print("TV is on")
 
          def turn_off(self):
-             self._device.turn_off()
+             print("TV is off")
+
+     class DVDPlayer(Device):
+         def turn_on(self):
+             print("DVD Player is on")
+
+         def turn_off(self):
+             print("DVD Player is off")
 
      tv = TV()
      remote = RemoteControl(tv)
-
-     remote.turn_on()  # Output: TV is ON
-     remote.turn_off() # Output: TV is OFF
+     remote.power_on()
+     remote.power_off()
      ```
 
 ### 3. **Composite Pattern**:
-   - **Real-world analogy**: A company organization structure, with departments containing employees and sub-departments.
-
-
-   - **Code Example** (Python):
+   - **Definition**: Composes objects into tree structures to represent part-whole hierarchies.
+   - **Real-World Analogy**: A folder in a computer's file system containing files and subfolders.
+   - **When to Use**: Use it when you need to treat individual objects and compositions of objects uniformly.
+   - **Code Example**:
      ```python
-     class Employee:
-         def __init__(self, name):
-             self._name = name
+     class Graphic:
+         def draw(self):
+             pass
 
-         def display(self):
-             print(self._name)
+     class CompositeGraphic(Graphic):
+         def __init__(self):
+             self.graphics = []
 
-     class Department:
-         def __init__(self, name):
-             self._name = name
-             self._employees = []
+         def add(self
 
-         def add_employee(self, employee):
-             self._employees.append(employee)
+, graphic):
+             self.graphics.append(graphic)
 
-         def display(self):
-             print(self._name)
-             for employee in self._employees:
-                 employee.display()
+         def draw(self):
+             for graphic in self.graphics:
+                 graphic.draw()
 
-     employee1 = Employee("Alice")
-     employee2 = Employee("Bob")
-     employee3 = Employee("Charlie")
+     class Circle(Graphic):
+         def draw(self):
+             print("Drawing a circle")
 
-     department1 = Department("HR")
-     department1.add_employee(employee1)
-     department1.add_employee(employee2)
+     class Square(Graphic):
+         def draw(self):
+             print("Drawing a square")
 
-     department2 = Department("Engineering")
-     department2.add_employee(employee3)
-
-     company = Department("Company")
-     company.add_employee(department1)
-     company.add_employee(department2)
-
-     company.display()
+     circle = Circle()
+     square = Square()
+     composite = CompositeGraphic()
+     composite.add(circle)
+     composite.add(square)
+     composite.draw()
      ```
 
 ### 4. **Decorator Pattern**:
-   - **Real-world analogy**: Adding toppings to a pizza.
-   - **Code Example** (Python):
+   - **Definition**: Attaches additional responsibilities to an object dynamically, providing a flexible alternative to subclassing.
+   - **Real-World Analogy**: Adding toppings to a pizza or filters to an image editor.
+   - **When to Use**: Use it when you want to add behavior to individual objects without affecting other objects of the same class.
+   - **Code Example**:
      ```python
-     class Pizza:
+     class Coffee:
          def cost(self):
-             return 10
+             return 5
 
-     class TomatoTopping:
-         def __init__(self, pizza):
-             self._pizza = pizza
-
-         def cost(self):
-             return self._pizza.cost() + 2
-
-     class CheeseTopping:
-         def __init__(self, pizza):
-             self._pizza = pizza
+     class MilkDecorator:
+         def __init__(self, coffee):
+             self._coffee = coffee
 
          def cost(self):
-             return self._pizza.cost() + 3
+             return self._coffee.cost() + 2
 
-     pizza = Pizza()
-     pizza_with_toppings = CheeseTopping(TomatoTopping(pizza))
-     print(pizza_with_toppings.cost())  # Output: 15
+     class SugarDecorator:
+         def __init__(self, coffee):
+             self._coffee = coffee
+
+         def cost(self):
+             return self._coffee.cost() + 1
+
+     coffee = Coffee()
+     coffee_with_milk = MilkDecorator(coffee)
+     coffee_with_sugar = SugarDecorator(coffee)
+
+     print(coffee_with_milk.cost())   # Output: 7
+     print(coffee_with_sugar.cost())  # Output: 6
      ```
 
 ### 5. **Facade Pattern**:
-   - **Real-world analogy**: Using a remote control to operate a complex home theater system.
-   - **Code Example** (Python):
+   - **Definition**: Provides a simplified interface to a complex subsystem, making it easier to use.
+   - **Real-World Analogy**: Using a smartphone with a user-friendly touchscreen instead of directly dealing with internal components.
+   - **When to Use**: Use it when you want to hide the complexity of a subsystem and provide a simpler interface to clients.
+   - **Code Example**:
      ```python
-     class Amplifier:
-         def turn_on(self):
-             print("Amplifier is ON")
+     class SubsystemA:
+         def operation_a(self):
+             print("Subsystem A: Operation A")
 
-         def turn_off(self):
-             print("Amplifier is OFF")
+     class SubsystemB:
+         def operation_b(self):
+             print("Subsystem B: Operation B")
 
-     class DVDPlayer:
-         def turn_on(self):
-             print("DVD Player is ON")
+     class Facade:
+         def __init__(self):
+             self.subsystem_a = SubsystemA()
+             self.subsystem_b = SubsystemB()
 
-         def turn_off(self):
-             print("DVD Player is OFF")
+         def operation(self):
+             self.subsystem_a.operation_a()
+             self.subsystem_b.operation_b()
 
-     class HomeTheaterFacade:
-         def __init__(self, amplifier, dvd_player):
-             self._amplifier = amplifier
-             self._dvd_player = dvd_player
+     facade = Facade()
+     facade.operation()
 
-         def watch_movie(self):
-             self._amplifier.turn_on()
-             self._dvd_player.turn_on()
-             print("Movie is playing")
-
-         def end_movie(self):
-             self._dvd_player.turn_off()
-             self._amplifier.turn_off()
-             print("Movie has ended")
-
-     amplifier = Amplifier()
-     dvd_player = DVDPlayer()
-     theater = HomeTheaterFacade(amplifier, dvd_player)
-
-     theater.watch_movie()  # Output: Amplifier is ON, DVD Player is ON, Movie is playing
-     theater.end_movie()    # Output: DVD Player is OFF, Amplifier is OFF, Movie has ended
+     # Output:
+     # Subsystem A: Operation A
+     # Subsystem B: Operation B
      ```
 
 ### 6. **Flyweight Pattern**:
-   - **Real-world analogy**: Using a shared bike service, where many users share the same bikes.
-   - **Code Example** (Python):
+   - **Definition**: Minimizes memory usage or computational expenses by sharing as much as possible with similar objects.
+   - **Real-World Analogy**: Recycling objects like keys in a piano to save resources.
+   - **When to Use**: Use it when you need to create a large number of similar objects efficiently.
+   - **Code Example**:
      ```python
-     class Bike:
-         def __init__(self, bike_type):
-             self._bike_type = bike_type
+     class TreeType:
+         def __init__(self, name, color):
+             self.name = name
+             self.color = color
 
-         def ride(self, user):
-             print(f"{user} is riding a {self._bike_type} bike")
+         def render(self, x, y):
+             print(f"Render a {self.color} {self.name} tree at ({x}, {y})")
 
-     class BikeFactory:
-         _bikes = {}
+     class TreeFactory:
+         _tree_types = {}
 
          @staticmethod
-         def get_bike(bike_type):
-             if bike_type not in BikeFactory._bikes:
-                 BikeFactory._bikes[bike_type] = Bike(bike_type)
-             return BikeFactory._bikes[bike_type]
+         def get_tree_type(name, color):
+             if (tree_type := TreeFactory._tree_types.get(name)) is None:
+                 tree_type = TreeType(name, color)
+                 TreeFactory._tree_types[name] = tree_type
+             return tree_type
 
-     users = ["User A", "User B", "User C"]
+     class Forest:
+         def __init__(self):
+             self.trees = []
 
-     for user in users:
-         bike = BikeFactory.get_bike("Mountain")
-         bike.ride(user)
+         def plant_tree(self, x, y, name, color):
+             tree_type = TreeFactory.get_tree_type(name, color)
+             tree = {"x": x, "y": y, "type": tree_type}
+             self.trees.append(tree)
 
-     # Output:
-     # User A is riding a Mountain bike
-     # User B is riding a Mountain bike
-     # User C is riding a Mountain bike
+         def draw(self):
+             for tree in self.trees:
+                 tree["type"].render(tree["x"], tree["y"])
+
+     forest = Forest()
+     forest.plant_tree(1, 2, "Maple", "Red")
+     forest.plant_tree(3, 4, "Oak", "Green")
+     forest.draw()
      ```
 
-## Behavioral Patterns:
+## **Behavioral Patterns:**
 
 ### 1. **Observer Pattern**:
-   - **Real-world analogy**: Subscribing to a YouTube channel to get notified of new videos.
-   - **Code Example** (Python):
+   - **Definition**: Defines a one-to-many dependency between objects, so when one object changes state, all its dependents are notified and updated automatically.
+   - **Real-World Analogy**: Subscribing to a YouTube channel to receive notifications of new videos.
+   - **When to Use**: Use it when one object needs to notify multiple objects about changes without knowing who or what those objects are.
+   - **Code Example**:
      ```python
-     class YouTuber:
+     class Subject:
          def __init__(self):
-             self.subscribers = []
+             self._observers = []
 
-         def subscribe(self, subscriber):
-             self.subscribers.append(subscriber)
+         def attach(self, observer):
+             self._observers.append(observer)
 
-         def upload_video(self, video):
-             print("New video uploaded!")
-             for subscriber in self.subscribers:
-                 subscriber.notify(video)
+         def detach(self, observer):
+             self._observers.remove(observer)
 
-     class Subscriber:
-         def notify(self, video):
-             print(f"Received a notification: New video - {video}")
+         def notify(self):
+             for observer in self._observers:
+                 observer.update()
 
-     youtuber = YouTuber()
-     subscriber1 = Subscriber()
-     subscriber2 = Subscriber()
+     class ConcreteSubject(Subject):
+         def some_business_logic(self):
+             self.notify()
 
-     youtuber.subscribe(subscriber1)
-     youtuber.subscribe(subscriber2)
-     youtuber.upload_video("How to Code")
+     class Observer:
+         def update(self):
+             pass
 
-     # Output:
-     # New video uploaded!
-     # Received a notification: New video - How to Code
-     # Received a notification: New video - How to Code
+     class ConcreteObserver(Observer):
+         def update(self):
+             print("ConcreteObserver received an update")
+
+     subject = ConcreteSubject()
+     observer = ConcreteObserver()
+
+     subject.attach(observer)
+     subject.some_business_logic()
      ```
 
 ### 2. **Strategy Pattern**:
-   - **Real-world analogy**: Choosing different characters in a video game, each with unique abilities.
-   - **Code Example** (Python):
+   - **Definition**: Defines a family of algorithms, encapsulates each one, and makes them interchangeable. It allows the client to choose the appropriate algorithm at runtime.
+   - **Real-World Analogy**: Choosing different navigation apps (e.g., Google Maps, Apple Maps) for driving directions.
+   - **When to Use**: Use it when you want to define a family of interchangeable algorithms and make them easily switchable.
+   - **Code Example**:
      ```python
-     class Character:
+     class Context:
          def __init__(self, strategy):
-             self.strategy = strategy
+             self._strategy = strategy
 
-         def attack(self):
-             self.strategy.attack()
+         def do_operation(self):
+             self._strategy.execute()
 
-     class SwordAttack:
-         def attack(self):
-             print("Attacking with a sword!")
-
-     class BowAttack:
-         def attack(self):
-             print("Attacking with a bow!")
-
-     character1 = Character(SwordAttack())
-     character2 = Character(BowAttack())
-
-     character1.attack()  # Output: Attacking with a sword!
-     character2.attack()  # Output: Attacking with a bow!
-     ```
-
-### 3. **Command Pattern**:
-   - **Real-world analogy**: Remote control with buttons to perform actions like turning on/off a TV.
-   - **Code Example** (Python):
-     ```python
-     from abc import ABC, abstractmethod
-
-     class Command(ABC):
-         @abstractmethod
+     class Strategy:
          def execute(self):
              pass
 
-     class Light:
-         def turn_on(self):
-             print("Light is ON")
+     class ConcreteStrategyA(Strategy):
+         def execute(self):
+             print("Executing strategy A")
 
-         def turn_off(self):
-             print("Light is OFF")
+     class ConcreteStrategyB(Strategy):
+         def execute(self):
+             print("Executing strategy B")
+
+     context = Context(ConcreteStrategyA())
+     context.do_operation()
+
+     context._strategy = ConcreteStrategyB()
+     context.do_operation()
+     ```
+
+### 3. **Command Pattern**:
+   - **Definition**: Encapsulates a request as an object, thereby allowing for parameterization of clients with queues, requests, and operations.
+   - **Real-World Analogy**: A remote control with buttons for various home appliances.
+   - **When to Use**: Use it when you want to decouple sender and receiver of a request and allow for queuing or logging requests.
+   - **Code Example**:
+     ```python
+     class Receiver:
+         def perform_action(self):
+             pass
+
+     class Light(Receiver):
+         def perform_action(self):
+             print("Light is on")
+
+     class TV(Receiver):
+         def perform_action(self):
+             print("TV is on")
+
+     class Command:
+         def __init__(self, receiver
+
+):
+             self._receiver = receiver
+
+         def execute(self):
+             pass
 
      class LightOnCommand(Command):
-         def __init__(self, light):
-             self._light = light
-
          def execute(self):
-             self._light.turn_on()
+             self._receiver.perform_action()
 
-     class LightOffCommand(Command):
-         def __init__(self, light):
-             self._light = light
-
+     class TVOnCommand(Command):
          def execute(self):
-             self._light.turn_off()
+             self._receiver.perform_action()
 
      class RemoteControl:
          def __init__(self):
@@ -508,24 +464,24 @@
              self._command.execute()
 
      light = Light()
-     light_on = LightOnCommand(light)
-     light_off = LightOffCommand(light)
-
+     light_on_command = LightOnCommand(light)
      remote = RemoteControl()
-     remote.set_command(light_on)
-     remote.press_button()  # Output: Light is ON
-     remote.set_command(light_off)
-     remote.press_button()  # Output:
+     remote.set_command(light_on_command)
+     remote.press_button()
 
- Light is OFF
+     tv = TV()
+     tv_on_command = TVOnCommand(tv)
+     remote.set_command(tv_on_command)
+     remote.press_button()
      ```
 
 ### 4. **State Pattern**:
-   - **Real-world analogy**: A TV can be in different states like ON, OFF, or MUTE, and you can switch between these states.
-   - **Code Example** (Python):
+   - **Definition**: Allows an object to alter its behavior when its internal state changes. The object will appear to change its class.
+   - **Real-World Analogy**: A TV with different states (e.g., On, Off, Mute) that affect its behavior.
+   - **When to Use**: Use it when an object's behavior changes based on its internal state, and it needs to switch between different behaviors dynamically.
+   - **Code Example**:
      ```python
-     class TVState(ABC):
-         @abstractmethod
+     class State:
          def handle(self):
              pass
 
@@ -539,128 +495,111 @@
          def press_button(self):
              self._state.handle()
 
-     class TVOn(TVState):
+     class OnState(State):
          def handle(self):
-             print("TV is ON")
+             print("TV is On")
 
-     class TVOff(TVState):
+     class OffState(State):
          def handle(self):
-             print("TV is OFF")
+             print("TV is Off")
 
-     class TVMute(TVState):
+     class MuteState(State):
          def handle(self):
-             print("TV is MUTE")
+             print("TV is Muted")
 
      tv = TV()
-     tv.set_state(TVOn())
-     tv.press_button()  # Output: TV is ON
-     tv.set_state(TVOff())
-     tv.press_button()  # Output: TV is OFF
-     tv.set_state(TVMute())
-     tv.press_button()  # Output: TV is MUTE
+     tv.set_state(OnState())
+     tv.press_button()
+
+     tv.set_state(OffState())
+     tv.press_button()
+
+     tv.set_state(MuteState())
+     tv.press_button()
      ```
 
 ### 5. **Chain of Responsibility Pattern**:
-   - **Real-world analogy**: Passing a request through a chain of managers in an organization until one of them approves it.
-   - **Code Example** (Python):
+   - **Definition**: Passes the request along a chain of handlers, each processing the request or passing it to the next handler in the chain.
+   - **Real-World Analogy**: Customer support departments escalating issues to higher levels if they can't handle them.
+   - **When to Use**: Use it when you want to avoid coupling the sender of a request to its receiver and allow multiple objects to handle the request.
+   - **Code Example**:
      ```python
-     class Manager:
-         def __init__(self, name):
-             self._name = name
-             self._successor = None
-
-         def set_successor(self, successor):
-             self._successor = successor
+     class Handler:
+         def set_next(self, handler):
+             pass
 
          def handle_request(self, request):
              pass
 
-     class TeamLead(Manager):
-         def handle_request(self, request):
-             if request <= 2:
-                 print(f"Team Lead {self._name} approved the request.")
-             elif self._successor is not None:
-                 self._successor.handle_request(request)
+     class ConcreteHandler(Handler):
+         def __init__(self):
+             self._next_handler = None
 
-     class ProjectManager(Manager):
-         def handle_request(self, request):
-             if request <= 5:
-                 print(f"Project Manager {self._name} approved the request.")
-             elif self._successor is not None:
-                 self._successor.handle_request(request)
+         def set_next(self, handler):
+             self._next_handler = handler
 
-     class Director(Manager):
          def handle_request(self, request):
              if request <= 10:
-                 print(f"Director {self._name} approved the request.")
-             else:
-                 print(f"Director {self._name} cannot approve the request.")
+                 print(f"Handled request {request}")
+             elif self._next_handler:
+                 self._next_handler.handle_request(request)
 
-     team_lead = TeamLead("Alice")
-     project_manager = ProjectManager("Bob")
-     director = Director("Charlie")
+     handler1 = ConcreteHandler()
+     handler2 = ConcreteHandler()
+     handler3 = ConcreteHandler()
 
-     team_lead.set_successor(project_manager)
-     project_manager.set_successor(director)
+     handler1.set_next(handler2)
+     handler2.set_next(handler3)
 
-     team_lead.handle_request(3)  # Output: Team Lead Alice approved the request.
-     team_lead.handle_request(7)  # Output: Director Charlie cannot approve the request.
+     handler1.handle_request(5)
+     handler1.handle_request(15)
      ```
 
 ### 6. **Interpreter Pattern**:
-   - **Real-world analogy**: A language translator that interprets spoken words from one language to another.
-   - **Code Example** (Python):
+   - **Definition**: Provides a way to evaluate language grammar or expressions.
+   - **Real-World Analogy**: A language interpreter that translates human language into machine instructions.
+   - **When to Use**: Use it when you need to define a grammar for a simple language and provide a way to evaluate expressions in that language.
+   - **Code Example** (simplified):
      ```python
      from abc import ABC, abstractmethod
 
-     class Expression(ABC):
+     class AbstractExpression(ABC):
          @abstractmethod
-         def interpret(self, context):
+         def interpret(self):
              pass
 
-     class NumberExpression(Expression):
-         def __init__(self, number):
-             self._number = number
+     class TerminalExpression(AbstractExpression):
+         def __init__(self, data):
+             self._data = data
 
-         def interpret(self, context):
-             return self._number
+         def interpret(self):
+             return self._data
 
-     class AddExpression(Expression):
-         def __init__(self, left, right):
-             self._left = left
-             self._right = right
+     class NonterminalExpression(AbstractExpression):
+         def __init__(self, expression1, expression2):
+             self._expression1 = expression1
+             self._expression2 = expression2
 
-         def interpret(self, context):
-             return self._left.interpret(context) + self._right.interpret(context)
+         def interpret(self):
+             return self._expression1.interpret() + self._expression2.interpret()
 
-     class Context:
-         def __init__(self):
-             self._variables = {}
-
-         def set_variable(self, variable, value):
-             self._variables[variable] = value
-
-         def get_variable(self, variable):
-             return self._variables.get(variable, 0)
-
-     context = Context()
-     context.set_variable("x", 5)
-     context.set_variable("y", 10)
-
-     expression = AddExpression(NumberExpression(context.get_variable("x")), NumberExpression(context.get_variable("y")))
-     result = expression.interpret(context)
-     print(f"Result: {result}")  # Output: Result: 15
+     expression1 = TerminalExpression(10)
+     expression2 = TerminalExpression(20)
+     expression3 = NonterminalExpression(expression1, expression2)
+     result = expression3.interpret()
      ```
 
 ### 7. **Visitor Pattern**:
-   - **Real-world analogy**: A tour guide who takes visitors through different places and provides information at each location.
-   - **Code Example** (Python):
+   - **Definition**: Represents an operation to be performed on elements of an object structure. It lets you define a new operation without changing the classes of the elements on which it operates.
+   - **Real-World Analogy**: A tax auditor visiting different businesses to calculate their tax liabilities.
+   - **When to Use**: Use it when you need to add new operations to existing classes without modifying those classes.
+   - **Code Example**:
      ```python
      from abc import ABC, abstractmethod
 
      class Visitor(ABC):
          @abstractmethod
-         def visit(self, element):
+         def visit_element(self, element):
              pass
 
      class Element(ABC):
@@ -668,35 +607,49 @@
          def accept(self, visitor):
              pass
 
-     class Museum(Element):
+     class ConcreteElementA(Element):
          def accept(self, visitor):
-             visitor.visit(self)
+             visitor.visit_element(self)
 
-     class Zoo(Element):
+         def operation_a(self):
+             pass
+
+     class ConcreteElementB(Element):
          def accept(self, visitor):
-             visitor.visit(self)
+             visitor.visit_element(self)
 
-     class VisitorImpl(Visitor):
-         def visit(self, element):
-             if isinstance(element, Museum):
-                 print("Visited the Museum")
-             elif isinstance(element, Zoo):
-                 print("Visited the Zoo")
+         def operation_b(self):
+             pass
 
-     elements = [Museum(), Zoo()]
-     visitor = VisitorImpl()
+     class ConcreteVisitorA(Visitor):
+         def visit_element(self, element):
+             if isinstance(element, ConcreteElementA):
+                 element.operation_a()
+             elif isinstance(element, ConcreteElementB):
+                 element.operation_b()
 
-     for element in elements:
-         element.accept(visitor)
+     class ConcreteVisitorB(Visitor):
+         def visit_element(self, element):
+             if isinstance(element, ConcreteElementA):
+                 element.operation_a()
+             elif isinstance(element, ConcreteElementB):
+                 element.operation_b()
 
-     # Output:
-     # Visited the Museum
-     # Visited the Zoo
+     element_a = ConcreteElementA()
+     element_b = ConcreteElementB()
+
+     visitor_a = ConcreteVisitorA()
+     visitor_b = ConcreteVisitorB()
+
+     element_a.accept(visitor_a)
+     element_b.accept(visitor_b)
      ```
 
 ### 8. **Memento Pattern**:
-   - **Real-world analogy**: Saving game progress at checkpoints and being able to restore the game to a previous state.
-   - **Code Example** (Python):
+   - **Definition**: Captures and externalizes an object's internal state so the object can be restored to this state later.
+   - **Real-World Analogy**: Saving and restoring checkpoints in a video game.
+   - **When to Use**: Use it when you need to capture an object's state and be able to restore it to a previous state if needed.
+   - **Code Example**:
      ```python
      class Memento:
          def __init__(self, state):
@@ -712,13 +665,10 @@
          def set_state(self, state):
              self._state = state
 
-         def get_state(self):
-             return self._state
-
          def create_memento(self):
              return Memento(self._state)
 
-         def restore_state(self, memento):
+         def restore_memento(self, memento):
              self._state = memento.get_state()
 
      class Caretaker:
@@ -728,20 +678,24 @@
          def add_memento(self, memento):
              self._mementos.append(memento)
 
-         def get_memento(self, index):
+         def get_memento(self
+
+, index):
              return self._mementos[index]
 
      originator = Originator()
      caretaker = Caretaker()
 
      originator.set_state("State 1")
-     caretaker.add_memento(originator.create_memento())
+     memento1 = originator.create_memento()
+     caretaker.add_memento(memento1)
 
      originator.set_state("State 2")
-     caretaker.add_memento(originator.create_memento())
+     memento2 = originator.create_memento()
+     caretaker.add_memento(memento2)
 
-     originator.restore_state(caretaker.get_memento(0))
-     print(originator.get_state())  # Output: State 1
+     originator.restore_memento(caretaker.get_memento(0))
+     print(originator._state)  # Output: State 1
      ```
 
-These examples should give you a deeper understanding of various design patterns, their real-world analogies, and how they can be implemented in Python to solve specific software design problems. Design patterns help make your code more organized, maintainable, and flexible.
+These are some of the most common design patterns, along with their definitions, real-world analogies, use cases, and code examples. Keep in mind that design patterns are tools to help you solve common programming problems and improve code maintainability and flexibility. The choice of which pattern to use depends on the specific problem you're trying to solve and the context of your software project.
